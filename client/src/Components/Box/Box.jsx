@@ -13,7 +13,7 @@ const messageReducer = (state, action) => {
 };
 
 const Box = () => {
-  const socket = io('http://localhost:8080');
+  const socket = io('https://rentry-tp26.onrender.com/');
   const [messages, dispatch] = useReducer(messageReducer, []);
   const [newMessage, setNewMessage] = useState('');
 
