@@ -13,28 +13,46 @@ const messageReducer = (state, action) => {
 };
 
 const Box = () => {
-  const socket = io('https://rentry-tp26.onrender.com');
+  const [socket, setSocket] = useState(null);
   const [messages, dispatch] = useReducer(messageReducer, []);
   const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
-    const handleBroadcastMessage = (message) => {
-      dispatch({ type: 'addServerMessage', text: message.text });
-    };
+    const newSocket = io('https://rentry-tp26.onrender.com');
 
-    socket.on('broadcast-message', handleBroadcastMessage);
+    newSocket.on('connect', () => {
+      console.log('Connected to the server');
+    });
+
+    newSocket.on('disconnect', () => {
+      console.log('Disconnected from the server');
+    });
+
+    setSocket(newSocket);
 
     return () => {
-      socket.off('broadcast-message', handleBroadcastMessage);
+      newSocket.disconnect();
     };
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      const handleBroadcastMessage = (message) => {
+        dispatch({ type: 'addServerMessage', text: message.text });
+      };
+
+      socket.on('broadcast-message', handleBroadcastMessage);
+
+      return () => {
+        socket.off('broadcast-message', handleBroadcastMessage);
+      };
+    }
   }, [socket]);
 
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.sender === 'server') {
-        // Only scroll to the latest message if it's from the server
-        // This prevents scrolling when the user sends a message
         scrollToLatestMessage();
       }
     }

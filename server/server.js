@@ -1,7 +1,12 @@
-const io = require('socket.io')({
-    cors: {
-        origin: "https://rentry-seven.vercel.app/",
-    }
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+
+const httpServer = createServer();
+const io = new Server(httpServer, {
+  cors: {
+    origin: "https://rentry-seven.vercel.app",
+    methods: ["GET", "POST"]
+  }
 });
 
 // Socket.io connection event
@@ -18,4 +23,10 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
+});
+
+// Listen on the specified port
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
