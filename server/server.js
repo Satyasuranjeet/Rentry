@@ -1,4 +1,4 @@
-const io = require('socket.io')(8080,{
+const io = require('socket.io')({
     cors: {
         origin: "https://rentry-seven.vercel.app/",
     }
